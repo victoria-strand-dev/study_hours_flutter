@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null
+             && request.auth.uid == userId
+             && request.resource != null
+             && isValidUserDoc(request.resource.data);
+    }
+
+    function isValidUserDoc(data) {
+      return data.keys().hasOnly(['appData']) &&
+             data.appData is map &&
+             isValidAppData(data.appData);
+    }
+
+    function isValidAppData(appData) {
+      return appData.keys().hasOnly([
+               'semesterCredits',
+               'semesterWeeks',
+               'semesterStartDate',
+               'courses',
+               'schedule'
+             ]) &&
+
+             appData.semesterCredits is int &&
+             appData.semesterCredits >= 0 &&
+             appData.semesterCredits <= 120 &&
+
+             appData.semesterWeeks is int &&
+             appData.semesterWeeks >= 1 &&
+             appData.semesterWeeks <= 52 &&
+
+             (
+               !('semesterStartDate' in appData) ||
+               appData.semesterStartDate == null ||
+               appData.semesterStartDate is string
+             ) &&
+
+             appData.courses is list &&
+             appData.courses.size() <= 100 &&
+
+             appData.schedule is list &&
+             appData.schedule.size() <= 1000;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "215972147797",
+    "project_id": "vssstudiostudyhour",
+    "storage_bucket": "vssstudiostudyhour.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215972147797:android:8218b54248557ff1bbdadc",
+        "android_client_info": {
+          "package_name": "com.example.study_hours_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGZOPx3eyEpg-uszsvNoyffSVzPam_its"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215972147797:android:5becc3e8d86d5168bbdadc",
+        "android_client_info": {
+          "package_name": "com.vssstudio.studyhours"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGZOPx3eyEpg-uszsvNoyffSVzPam_its"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
