@@ -69,13 +69,9 @@ class StatsScreen extends StatelessWidget {
     final bars     = _weeklyBars(state, 6);
     final maxBar   = bars.fold(0.0, (m, b) => b.hours > m ? b.hours : m);
 
-    // Hours per course (actual time spent)
-    final Map<String, double> courseHours = {};
-    for (final e in state.schedule) {
-      if (!e.completed) continue;
-      courseHours[e.courseId] = (courseHours[e.courseId] ?? 0) + _dur(e.startTime, e.endTime);
-    }
-    final totalTracked = courseHours.values.fold(0.0, (a, b) => a + b);
+    // Hours per course — includes hoursStudiedSoFar for catch-up courses
+    final totalTracked = state.courses.fold(
+        0.0, (sum, c) => sum + state.effectiveCompletedHours(c));
 
     return SafeArea(
       bottom: false,
@@ -257,7 +253,7 @@ class StatsScreen extends StatelessWidget {
                     child: Column(
                       children: (() {
                         final sorted = state.courses.map((c) {
-                          return MapEntry(c, courseHours[c.id] ?? 0.0);
+                          return MapEntry(c, state.effectiveCompletedHours(c));
                         }).toList()
                           ..sort((a, b) => b.value.compareTo(a.value));
                         return sorted.map((entry) {

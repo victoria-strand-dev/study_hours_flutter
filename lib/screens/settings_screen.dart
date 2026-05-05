@@ -4,9 +4,11 @@ import '../theme/app_colors.dart';
 import '../theme/app_text.dart';
 import '../state/app_state.dart';
 import '../widgets/shared_widgets.dart';
+import 'main_shell.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final bool firstTime;
+  const SettingsScreen({super.key, this.firstTime = false});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -100,6 +102,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       clearStartDate: _startDate == null,
     );
 
+    if (!mounted) return;
+
+    if (widget.firstTime) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const MainShell()));
+      return;
+    }
+
     setState(() => _saved = true);
     Future.delayed(const Duration(seconds: 2),
         () { if (mounted) setState(() => _saved = false); });
@@ -111,7 +121,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final double hPad = (size.width * 0.07).clamp(20.0, 52.0);
 
     return Scaffold(
-      appBar: buildAppBar(context, 'SEMESTER'),
+      appBar: buildAppBar(context, 'SEMESTER',
+          showBack: !widget.firstTime),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 16),
@@ -231,33 +242,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         borderRadius: BorderRadius.circular(14)),
                     elevation: 3,
                   ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: _saved
-                        ? const Row(
-                            key: ValueKey('saved'),
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.check_rounded, color: Colors.white, size: 20),
-                              SizedBox(width: 8),
-                              Text('Saved!',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 16)),
-                            ],
-                          )
-                        : Text(
-                            key: const ValueKey('save'),
-                            'SAVE',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: Ts.s(context, 17),
-                              letterSpacing: 1.5,
-                            ),
+                  child: widget.firstTime
+                      ? const Text(
+                          'Get Started',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 17,
+                            letterSpacing: 0.5,
                           ),
-                  ),
+                        )
+                      : AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: _saved
+                              ? const Row(
+                                  key: ValueKey('saved'),
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.check_rounded, color: Colors.white, size: 20),
+                                    SizedBox(width: 8),
+                                    Text('Saved!',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16)),
+                                  ],
+                                )
+                              : Text(
+                                  key: const ValueKey('save'),
+                                  'SAVE',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: Ts.s(context, 17),
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                        ),
                 ),
               ),
             ],

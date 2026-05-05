@@ -55,17 +55,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ── Course progress (hours completed / target) ───────────────────────────
   double _courseProgress(AppState state, Course c) {
-    final completed = state.schedule
-        .where((e) => e.courseId == c.id && e.completed)
-        .fold(0.0, (s, e) => s + _duration(e.startTime, e.endTime));
+    final completed = state.effectiveCompletedHours(c);
+    final required  = state.requiredHoursForCourse(c);
+    if (required != null && required > 0) return (completed / required).clamp(0.0, 1.0);
     final multiplier = gradeMultiplier(c.targetGrade) ?? 0.8;
     final target     = c.credits * 25 * multiplier;
     return target > 0 ? (completed / target).clamp(0.0, 1.0) : 0.0;
   }
 
-  double _courseCompletedHours(AppState state, Course c) => state.schedule
-      .where((e) => e.courseId == c.id && e.completed)
-      .fold(0.0, (s, e) => s + _duration(e.startTime, e.endTime));
+  double _courseCompletedHours(AppState state, Course c) =>
+      state.effectiveCompletedHours(c);
 
   // ── Next incomplete session for selected day ─────────────────────────────
   ScheduleEntry? _nextEntry(AppState state) =>

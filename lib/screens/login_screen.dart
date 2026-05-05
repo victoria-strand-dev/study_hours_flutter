@@ -5,6 +5,7 @@ import '../theme/app_colors.dart';
 import '../state/app_state.dart';
 import 'main_shell.dart';
 import 'privacy_screen.dart';
+import 'settings_screen.dart';
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
 
@@ -384,7 +385,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .setFirebaseUser(cred.user!.uid, email);
       if (!mounted) return;
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const MainShell()));
+          context, MaterialPageRoute(
+              builder: (_) => const SettingsScreen(firstTime: true)));
     } on FirebaseAuthException catch (e) {
       _showError(_authMessage(e.code));
     } catch (_) {

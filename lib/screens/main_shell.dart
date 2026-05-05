@@ -34,9 +34,6 @@ class _MainShellState extends State<MainShell> {
     }
   }
 
-  // ── Quick-add session dialog (surfaced from center + button) ─────────────
-  void _showAddDialog() => _onNavTap(2);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,8 +41,6 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: _currentIndex,
         onTap: _onNavTap,
-        showAdd: true,
-        onAdd: _showAddDialog,
       ),
     );
   }
