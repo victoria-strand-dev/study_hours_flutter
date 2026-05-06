@@ -4,6 +4,8 @@ import '../theme/app_colors.dart';
 import '../theme/app_text.dart';
 import '../state/app_state.dart';
 import '../widgets/shared_widgets.dart';
+import 'profile_screen.dart';
+import 'settings_screen.dart';
 
 class StatsScreen extends StatelessWidget {
   final void Function(int) onNavTap;
@@ -77,7 +79,25 @@ class StatsScreen extends StatelessWidget {
       bottom: false,
       child: Column(
         children: [
-          buildAppBar(context, 'STATISTICS', showBack: false),
+          buildAppBar(
+            context,
+            'STATISTICS',
+            showBack: false,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SettingsIconButton(
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                ),
+                const SizedBox(width: 4),
+                ProfileIconButton(
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const ProfileScreen())),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: ListView(
               padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 24),
@@ -117,7 +137,7 @@ class StatsScreen extends StatelessWidget {
                     Expanded(
                       child: _StatTile(
                         icon: Icons.check_circle_rounded,
-                        iconColor: AppColors.success,
+                        iconColor: const Color.fromARGB(172, 0, 173, 72),
                         value: '$sessions',
                         label: 'sessions done',
                       ),

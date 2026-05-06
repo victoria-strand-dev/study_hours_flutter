@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/app_colors.dart';
@@ -6,6 +7,7 @@ import '../state/app_state.dart';
 import 'main_shell.dart';
 import 'privacy_screen.dart';
 import 'settings_screen.dart';
+import 'terms_screen.dart';
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
 
@@ -342,6 +344,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
+  final _privacyRecognizer = TapGestureRecognizer();
+  final _termsRecognizer = TapGestureRecognizer();
   bool _obscure = true;
   bool _loading = false;
   bool _consented = false;
@@ -351,6 +355,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
+    _privacyRecognizer.dispose();
+    _termsRecognizer.dispose();
     super.dispose();
   }
 
@@ -417,6 +423,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final double logoH = (size.width * 0.25).clamp(80.0, 120.0);
     final double titleSize = (size.width * 0.085).clamp(28.0, 42.0);
 
+    _privacyRecognizer.onTap = () => Navigator.push(
+        context, MaterialPageRoute(builder: (_) => const PrivacyScreen()));
+    _termsRecognizer.onTap = () => Navigator.push(
+        context, MaterialPageRoute(builder: (_) => const TermsScreen()));
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -478,64 +489,61 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       obscure: true,
                     ),
                     const SizedBox(height: 12),
-                    GestureDetector(
-                      onTap: () => setState(() => _consented = !_consented),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: Checkbox(
-                              value: _consented,
-                              onChanged: (v) =>
-                                  setState(() => _consented = v ?? false),
-                              activeColor: AppColors.cardDark,
-                              checkColor: Colors.white,
-                              side: const BorderSide(
-                                  color: AppColors.textDark, width: 1.5),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4)),
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: Checkbox(
+                            value: _consented,
+                            onChanged: (v) =>
+                                setState(() => _consented = v ?? false),
+                            activeColor: AppColors.cardDark,
+                            checkColor: Colors.white,
+                            side: const BorderSide(
+                                color: AppColors.textDark, width: 1.5),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const PrivacyScreen()),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                color: AppColors.textDark.withValues(alpha: 0.85),
+                                fontSize: (size.width * 0.033).clamp(11.0, 14.0),
+                                fontWeight: FontWeight.w500,
                               ),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    color: AppColors.textDark
-                                        .withValues(alpha: 0.85),
-                                    fontSize:
-                                        (size.width * 0.033).clamp(11.0, 14.0),
-                                    fontWeight: FontWeight.w500,
+                              children: [
+                                const TextSpan(text: 'I accept the '),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  recognizer: _privacyRecognizer,
+                                  style: const TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                  children: const [
-                                    TextSpan(text: 'I accept the '),
-                                    TextSpan(
-                                      text: 'Privacy Policy',
-                                      style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                        text:
-                                            ' and consent to the processing of my personal data.'),
-                                  ],
                                 ),
-                              ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Terms of Use',
+                                  recognizer: _termsRecognizer,
+                                  style: const TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const TextSpan(
+                                    text: ', and consent to the processing of my personal data.'),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 14),
                     SizedBox(

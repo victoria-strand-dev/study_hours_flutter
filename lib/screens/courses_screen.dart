@@ -523,7 +523,15 @@ class CoursesScreen extends StatelessWidget {
 
     final today = DateTime.now();
     final todayOnly = DateTime(today.year, today.month, today.day);
-    final startMonday = todayOnly.subtract(Duration(days: todayOnly.weekday - 1));
+
+    // Don't schedule before the semester start date if it's in the future.
+    final semStart = state.semesterStartDate;
+    final effectiveStart = (semStart != null && semStart.isAfter(todayOnly))
+        ? DateTime(semStart.year, semStart.month, semStart.day)
+        : todayOnly;
+
+    final startMonday =
+        effectiveStart.subtract(Duration(days: effectiveStart.weekday - 1));
 
     // Build per-weekday load for day-selection (average hours/weekday across future sessions).
     // Only used to pick the LEAST-loaded weekdays — NOT for start time calculation.
@@ -603,7 +611,7 @@ class CoursesScreen extends StatelessWidget {
     for (int w = 0; w < weeks; w++) {
       for (final wd in days) {
         final date = startMonday.add(Duration(days: w * 7 + (wd - 1)));
-        if (date.isAfter(endDate) || date.isBefore(todayOnly)) continue;
+        if (date.isAfter(endDate) || date.isBefore(effectiveStart)) continue;
         final dateKey = DateTime(date.year, date.month, date.day).toIso8601String();
         final sH = dateMaxEnd[dateKey] ?? startH;
         final eH = sH + hPerSession;
