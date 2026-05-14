@@ -1,20 +1,27 @@
 import 'dart:convert';
 
-// ─── GRADE MULTIPLIER ────────────────────────────────────────────────────────
+///<3<3<3<3<3<3<3<3 Grade Multiplier <3<3<3<3<3<3<3<3
 
 double? gradeMultiplier(String grade) {
   switch (grade.toUpperCase()) {
-    case 'A': return 0.9;
-    case 'B': return 0.8;
-    case 'C': return 0.6;
-    case 'D': return 0.5;
-    case 'E': return 0.4;
-    case 'F': return 0.0;
-    default:  return null;
+    case 'A':
+      return 0.9;
+    case 'B':
+      return 0.8;
+    case 'C':
+      return 0.6;
+    case 'D':
+      return 0.5;
+    case 'E':
+      return 0.4;
+    case 'F':
+      return 0.0;
+    default:
+      return null;
   }
 }
 
-// ─── COURSE ──────────────────────────────────────────────────────────────────
+///<3<3<3<3<3<3<3<3 Course <3<3<3<3<3<3<3<3
 
 class Course {
   final String id;
@@ -23,11 +30,11 @@ class Course {
   final String targetGrade;
   final double hoursPerDay;
   final int daysPerWeek;
-  final bool hoursMode;           // true = hours-per-day mode
-  final bool catchUpMode;         // true = catch-up recalculation mode
+  final bool hoursMode;
+  final bool catchUpMode;
   final DateTime? examDate;
-  final double hoursStudiedSoFar; // persisted catch-up input
-  final int color;                // Color.value; 0 = auto-assign from presets
+  final double hoursStudiedSoFar;
+  final int color;
 
   Course({
     required this.id,
@@ -72,6 +79,8 @@ class Course {
     );
   }
 
+  ///<3<3<3<3<3<3<3<3 JSON <3<3<3<3<3<3<3<3
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
@@ -98,13 +107,14 @@ class Course {
         examDate: json['examDate'] != null
             ? DateTime.tryParse(json['examDate'] as String)
             : null,
-        hoursStudiedSoFar:
-            (json['hoursStudiedSoFar'] as num?)?.toDouble() ?? 0,
+        hoursStudiedSoFar: (json['hoursStudiedSoFar'] as num?)?.toDouble() ?? 0,
         color: json['color'] as int? ?? 0,
       );
+
+  ///<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 }
 
-// ─── SCHEDULE ENTRY ──────────────────────────────────────────────────────────
+///<3<3<3<3<3<3<3<3 Schedule Entry <3<3<3<3<3<3<3<3
 
 class ScheduleEntry {
   final String id;
@@ -113,6 +123,7 @@ class ScheduleEntry {
   final DateTime date;
   final String startTime;
   final String endTime;
+  final String label;
   bool completed;
 
   ScheduleEntry({
@@ -122,6 +133,7 @@ class ScheduleEntry {
     required this.date,
     required this.startTime,
     required this.endTime,
+    this.label = '',
     this.completed = false,
   });
 
@@ -132,6 +144,7 @@ class ScheduleEntry {
     DateTime? date,
     String? startTime,
     String? endTime,
+    String? label,
     bool? completed,
   }) {
     return ScheduleEntry(
@@ -141,9 +154,12 @@ class ScheduleEntry {
       date: date ?? this.date,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
+      label: label ?? this.label,
       completed: completed ?? this.completed,
     );
   }
+
+  ///<3<3<3<3<3<3<3<3 JSON <3<3<3<3<3<3<3<3
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -152,6 +168,7 @@ class ScheduleEntry {
         'date': date.toIso8601String(),
         'startTime': startTime,
         'endTime': endTime,
+        'label': label,
         'completed': completed,
       };
 
@@ -162,11 +179,14 @@ class ScheduleEntry {
         date: DateTime.parse(json['date'] as String),
         startTime: json['startTime'] as String,
         endTime: json['endTime'] as String,
+        label: json['label'] as String? ?? '',
         completed: json['completed'] as bool? ?? false,
       );
+
+  ///<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 }
 
-// ─── APP DATA ─────────────────────────────────────────────────────────────────
+///<3<3<3<3<3<3<3<3 App Data <3<3<3<3<3<3<3<3
 
 class AppData {
   final int semesterCredits;
@@ -177,30 +197,35 @@ class AppData {
 
   AppData({
     this.semesterCredits = 30,
-    this.semesterWeeks = 14,
+    this.semesterWeeks = 19,
     this.semesterStartDate,
     List<Course>? courses,
     List<ScheduleEntry>? schedule,
   })  : courses = courses ?? [],
         schedule = schedule ?? [];
 
-  /// 1-based current week in the semester, or null if no start date set.
+  ///<3<3<3<3<3<3<3<3 Getters <3<3<3<3<3<3<3<3
+
   int? get currentSemesterWeek {
     if (semesterStartDate == null) return null;
     final today = DateTime.now();
-    final start = DateTime(semesterStartDate!.year,
-        semesterStartDate!.month, semesterStartDate!.day);
+    final start = DateTime(semesterStartDate!.year, semesterStartDate!.month,
+        semesterStartDate!.day);
     final diff = today.difference(start).inDays;
-    if (diff < 0) return null; // semester hasn't started
+    if (diff < 0) return null;
     return (diff ~/ 7) + 1;
   }
 
-  /// Weeks remaining (inclusive of current week), or null if no start date.
   int? get weeksRemaining {
     final cur = currentSemesterWeek;
     if (cur == null) return null;
     return (semesterWeeks - cur + 1).clamp(0, semesterWeeks);
   }
+
+  double get totalCourseCredits =>
+      courses.fold(0.0, (sum, c) => sum + c.credits);
+
+  ///<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 
   AppData copyWith({
     int? semesterCredits,
@@ -213,13 +238,14 @@ class AppData {
     return AppData(
       semesterCredits: semesterCredits ?? this.semesterCredits,
       semesterWeeks: semesterWeeks ?? this.semesterWeeks,
-      semesterStartDate: clearStartDate
-          ? null
-          : semesterStartDate ?? this.semesterStartDate,
+      semesterStartDate:
+          clearStartDate ? null : semesterStartDate ?? this.semesterStartDate,
       courses: courses ?? this.courses,
       schedule: schedule ?? this.schedule,
     );
   }
+
+  ///<3<3<3<3<3<3<3<3 JSON <3<3<3<3<3<3<3<3
 
   Map<String, dynamic> toJson() => {
         'semesterCredits': semesterCredits,
@@ -248,27 +274,26 @@ class AppData {
   String toJsonString() => jsonEncode(toJson());
   factory AppData.fromJsonString(String s) => AppData.fromJson(jsonDecode(s));
 
-  double get totalCourseCredits =>
-      courses.fold(0.0, (sum, c) => sum + c.credits);
+  ///<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 }
 
-// ─── COURSE COLOR PRESETS ─────────────────────────────────────────────────────
+///<3<3<3<3<3<3<3<3 Course Colors <3<3<3<3<3<3<3<3
 
 class CourseColors {
   static const List<int> presets = [
-    0xFFD64545, // Crimson
-    0xFFE76F51, // Coral
-    0xFFE67E22, // Orange
-    0xFF2ECC71, // Emerald
-    0xFF5AA469, // Forest green
-    0xFF43AA8B, // Sage
-    0xFF2A9D8F, // Teal
-    0xFF5B6EE1, // Indigo
-    0xFF6A4C93, // Royal purple
-    0xFF8E44AD, // Purple
-    0xFFD16D9E, // Pink
-    0xFFF72585, // Hot magenta
-    0xFF9C6644, // Brown
-    0xFF3A86FF, // Electric blue
+    0xFFD64545,
+    0xFFE76F51,
+    0xFFE67E22,
+    0xFF429E69,
+    0xFF5AA469,
+    0xFF43AA8B,
+    0xFF2A9D8F,
+    0xFF5B6EE1,
+    0xFF6A4C93,
+    0xFF8E44AD,
+    0xFFD16D9E,
+    0xFFF72585,
+    0xFF9C6644,
+    0xFF3A86FF,
   ];
 }

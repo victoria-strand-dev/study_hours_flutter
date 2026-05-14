@@ -5,7 +5,6 @@ import '../state/app_state.dart';
 import 'login_screen.dart';
 import 'main_shell.dart';
 
-
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
 
@@ -88,7 +87,6 @@ class _StartScreenState extends State<StartScreen>
             children: [
               SizedBox(height: size.height * 0.12),
 
-              // Animated owl logo
               FadeTransition(
                 opacity: _fadeAnim,
                 child: ScaleTransition(

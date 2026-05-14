@@ -4,8 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text.dart';
 
-// ─── TAP SCALE WIDGET ─────────────────────────────────────────────────────────
-// Micro-interaction: slight scale-down on press — physical, tactile feel.
+//<3<3<3<3<3<3<3<3<3<3 Tap Scale Widget <3<3<3<3<3<3<3<3<3>
 
 class TapScaleWidget extends StatefulWidget {
   final Widget child;
@@ -58,9 +57,7 @@ class _TapScaleWidgetState extends State<TapScaleWidget>
   }
 }
 
-// ─── APP CARD ─────────────────────────────────────────────────────────────────
-// Reusable card. Default: vibrant blue (matching the app palette).
-// Set light:true for white surface (selected states, dialogs).
+//<3<3<3<3<3<3<3<3<3 App Card <3<3<3<3<3<3<3<3<3
 
 class AppCard extends StatelessWidget {
   final Widget child;
@@ -108,8 +105,7 @@ class AppCard extends StatelessWidget {
   }
 }
 
-// ─── APP BUTTON ───────────────────────────────────────────────────────────────
-// Orange CTA button — one clear primary action per screen (Von Restorff).
+//<3<3<3<3<3<3<3<3<3 App Button <3<3<3<3<3<3<3<3<3
 
 class AppButton extends StatelessWidget {
   final String label;
@@ -167,7 +163,7 @@ class AppButton extends StatelessWidget {
   }
 }
 
-// ─── SECTION TITLE ────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3 Section Title <3<3<3<3<3<3<3<3<3
 
 class SectionTitle extends StatelessWidget {
   final String title;
@@ -195,8 +191,7 @@ class SectionTitle extends StatelessWidget {
   }
 }
 
-// ─── PROGRESS WIDGET ──────────────────────────────────────────────────────────
-// Animated progress bar with optional label.
+//<3<3<3<3<3<3<3<3<3 Progress Widget <3<3<3<3<3<3<3<3<3
 
 class ProgressWidget extends StatelessWidget {
   final double value; // 0.0 – 1.0
@@ -214,7 +209,7 @@ class ProgressWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barColor = color ?? AppColors.accent;
+    final barColor = color ?? const Color.fromARGB(255, 202, 104, 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -248,7 +243,7 @@ class ProgressWidget extends StatelessWidget {
   }
 }
 
-// ─── APP BAR ──────────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3 App Bar <3<3<3<3<3<3<3<3<3
 
 PreferredSizeWidget buildAppBar(
   BuildContext context,
@@ -256,7 +251,7 @@ PreferredSizeWidget buildAppBar(
   Widget? trailing,
   bool showBack = true,
 }) {
-  final size  = MediaQuery.of(context).size;
+  final size = MediaQuery.of(context).size;
   final logoH = (size.width * 0.09).clamp(30.0, 44.0);
 
   return AppBar(
@@ -273,13 +268,12 @@ PreferredSizeWidget buildAppBar(
               height: logoH,
             ),
           ),
-    title: Text(title),
+    title: FittedBox(fit: BoxFit.scaleDown, child: Text(title)),
     actions: trailing != null ? [trailing, const SizedBox(width: 12)] : null,
   );
 }
 
-// ─── ICON BUTTONS ─────────────────────────────────────────────────────────────
-// 44×44dp minimum touch target (Fitts's Law)
+//<3<3<3<3<3<3<3<3<3 Icon Buttons <3<3<3<3<3<3<3<3<3
 
 class SettingsIconButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -330,8 +324,8 @@ class ProfileIconButton extends StatelessWidget {
               color: AppColors.cardDark,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.person_rounded,
-                color: Colors.white, size: 20),
+            child:
+                const Icon(Icons.person_rounded, color: Colors.white, size: 20),
           ),
         ),
       ),
@@ -339,21 +333,16 @@ class ProfileIconButton extends StatelessWidget {
   }
 }
 
-// ─── BOTTOM NAV BAR ───────────────────────────────────────────────────────────
-// 4 tabs + optional center CTA button (Jakob's Law: standard pattern)
+//<3<3<3<3<33<3<<3<3<3 Bottim navigation <3<3<3<3<3<3<3<3<3
 
 class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final void Function(int) onTap;
-  final bool showAdd;
-  final VoidCallback? onAdd;
 
   const AppBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
-    this.showAdd = false,
-    this.onAdd,
   });
 
   @override
@@ -367,7 +356,9 @@ class AppBottomNavBar extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.bg,
-        border: Border(top: BorderSide(color: AppColors.cardDark.withValues(alpha: 0.30), width: 1)),
+        border: Border(
+            top: BorderSide(
+                color: AppColors.cardDark.withValues(alpha: 0.30), width: 1)),
         boxShadow: [
           BoxShadow(
             color: AppColors.textDark.withValues(alpha: 0.06),
@@ -378,70 +369,30 @@ class AppBottomNavBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: _NavItem(
-              icon: Icons.home_rounded,
-              label: 'Home',
-              selected: currentIndex == 0,
-              onTap: () => onTap(0))),
-          Expanded(child: _NavItem(
-              icon: Icons.calendar_month_rounded,
-              label: 'Calendar',
-              selected: currentIndex == 1,
-              onTap: () => onTap(1))),
-          if (showAdd)
-            _CenterAddButton(onTap: onAdd ?? () {})
-          else
-            Expanded(child: _NavItem(
-                icon: Icons.school_rounded,
-                label: 'Courses',
-                selected: currentIndex == 2,
-                onTap: () => onTap(2))),
-          if (showAdd)
-            Expanded(child: _NavItem(
-                icon: Icons.school_rounded,
-                label: 'Courses',
-                selected: currentIndex == 2,
-                onTap: () => onTap(2))),
-          Expanded(child: _NavItem(
-              icon: Icons.bar_chart_rounded,
-              label: 'Stats',
-              selected: currentIndex == 3,
-              onTap: () => onTap(3))),
-        ],
-      ),
-    );
-  }
-}
-
-class _CenterAddButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _CenterAddButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return TapScaleWidget(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: Sp.s(context, 52),
-            height: Sp.s(context, 52),
-            decoration: const BoxDecoration(
-              color: AppColors.accent,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            'Add',
-            style: GoogleFonts.nunito(
-              fontSize: Ts.s(context, 12),
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
+          Expanded(
+              child: _NavItem(
+                  icon: Icons.home_rounded,
+                  label: 'Home',
+                  selected: currentIndex == 0,
+                  onTap: () => onTap(0))),
+          Expanded(
+              child: _NavItem(
+                  icon: Icons.calendar_month_rounded,
+                  label: 'Calendar',
+                  selected: currentIndex == 1,
+                  onTap: () => onTap(1))),
+          Expanded(
+              child: _NavItem(
+                  icon: Icons.school_rounded,
+                  label: 'Courses',
+                  selected: currentIndex == 2,
+                  onTap: () => onTap(2))),
+          Expanded(
+              child: _NavItem(
+                  icon: Icons.bar_chart_rounded,
+                  label: 'Stats',
+                  selected: currentIndex == 3,
+                  onTap: () => onTap(3))),
         ],
       ),
     );
@@ -463,7 +414,9 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.cardDark : AppColors.cardDark.withValues(alpha: 0.45);
+    final color = selected
+        ? AppColors.cardDark
+        : AppColors.cardDark.withValues(alpha: 0.45);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -489,20 +442,7 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-// ─── SECTION CARD ─────────────────────────────────────────────────────────────
-
-class SectionCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets? padding;
-  const SectionCard({super.key, required this.child, this.padding});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(padding: padding, child: child);
-  }
-}
-
-// ─── INPUT FIELD ──────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3 Input Field <3<3<3<3<3<3<3<3<3
 
 class StyledInput extends StatelessWidget {
   final String label;
@@ -542,7 +482,8 @@ class StyledInput extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.inputBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.22), width: 1),
+            border: Border.all(
+                color: Colors.white.withValues(alpha: 0.22), width: 1),
           ),
           child: TextField(
             controller: controller,
@@ -564,6 +505,35 @@ class StyledInput extends StatelessWidget {
               suffixIcon: suffix,
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class MenuRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool destructive;
+
+  const MenuRow({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.destructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = destructive ? Colors.redAccent : AppColors.textDark;
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: TextStyle(
+              color: color, fontWeight: FontWeight.w600, fontSize: 15),
         ),
       ],
     );

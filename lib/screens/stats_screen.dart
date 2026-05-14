@@ -5,21 +5,20 @@ import '../theme/app_text.dart';
 import '../state/app_state.dart';
 import '../widgets/shared_widgets.dart';
 import 'profile_screen.dart';
-import 'settings_screen.dart';
 
 class StatsScreen extends StatelessWidget {
   final void Function(int) onNavTap;
   const StatsScreen({super.key, required this.onNavTap});
 
-  static double _dur(String s, String e) {
+  static double _parseDuration(String start, String end) {
     double toH(String t) {
       final p = t.split(':');
-      return (int.tryParse(p[0]) ?? 0) + (int.tryParse(p.length > 1 ? p[1] : '0') ?? 0) / 60.0;
+      if (p.length < 2) return 0;
+      return (int.tryParse(p[0]) ?? 0) + (int.tryParse(p[1]) ?? 0) / 60.0;
     }
-    return (toH(e) - toH(s)).clamp(0.0, 24.0);
+    return (toH(end) - toH(start)).clamp(0.0, 24.0);
   }
 
-  /// Hours studied per week for the last [count] weeks (oldest → newest).
   List<_WeekBar> _weeklyBars(AppState state, int count) {
     final now = DateTime.now();
     final thisMonday = DateTime(now.year, now.month, now.day)
@@ -30,7 +29,7 @@ class StatsScreen extends StatelessWidget {
       if (!e.completed) continue;
       final mon = e.date.subtract(Duration(days: e.date.weekday - 1));
       final key = DateTime(mon.year, mon.month, mon.day);
-      map[key] = (map[key] ?? 0) + _dur(e.startTime, e.endTime);
+      map[key] = (map[key] ?? 0) + _parseDuration(e.startTime, e.endTime);
     }
 
     return List.generate(count, (i) {
@@ -42,7 +41,7 @@ class StatsScreen extends StatelessWidget {
 
   double _totalHours(AppState state) => state.schedule
       .where((e) => e.completed)
-      .fold(0.0, (s, e) => s + _dur(e.startTime, e.endTime));
+      .fold(0.0, (s, e) => s + _parseDuration(e.startTime, e.endTime));
 
   int _totalSessions(AppState state) =>
       state.schedule.where((e) => e.completed).length;
@@ -53,7 +52,7 @@ class StatsScreen extends StatelessWidget {
       if (!e.completed) continue;
       final mon = e.date.subtract(Duration(days: e.date.weekday - 1));
       final key = DateTime(mon.year, mon.month, mon.day);
-      map[key] = (map[key] ?? 0) + _dur(e.startTime, e.endTime);
+      map[key] = (map[key] ?? 0) + _parseDuration(e.startTime, e.endTime);
     }
     return map.values.fold(0.0, (m, v) => v > m ? v : m);
   }
@@ -63,17 +62,14 @@ class StatsScreen extends StatelessWidget {
     final state = AppStateProvider.of(context);
     final size = MediaQuery.of(context).size;
     final hPad = (size.width * 0.05).clamp(14.0, 40.0);
-
-    final streak   = state.studyStreak;
-    final totalH   = _totalHours(state);
+    final streak = state.studyStreak;
+    final totalH = _totalHours(state);
     final sessions = _totalSessions(state);
-    final bestW    = _bestWeek(state);
-    final bars     = _weeklyBars(state, 6);
-    final maxBar   = bars.fold(0.0, (m, b) => b.hours > m ? b.hours : m);
-
-    // Hours per course — includes hoursStudiedSoFar for catch-up courses
-    final totalTracked = state.courses.fold(
-        0.0, (sum, c) => sum + state.effectiveCompletedHours(c));
+    final bestW = _bestWeek(state);
+    final bars = _weeklyBars(state, 6);
+    final maxBar = bars.fold(0.0, (m, b) => b.hours > m ? b.hours : m);
+    final totalTracked = state.courses
+        .fold(0.0, (sum, c) => sum + state.effectiveCompletedHours(c));
 
     return SafeArea(
       bottom: false,
@@ -83,19 +79,9 @@ class StatsScreen extends StatelessWidget {
             context,
             'STATISTICS',
             showBack: false,
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SettingsIconButton(
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const SettingsScreen())),
-                ),
-                const SizedBox(width: 4),
-                ProfileIconButton(
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const ProfileScreen())),
-                ),
-              ],
+            trailing: ProfileIconButton(
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen())),
             ),
           ),
           Expanded(
@@ -103,8 +89,7 @@ class StatsScreen extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 24),
               physics: const BouncingScrollPhysics(),
               children: [
-
-                // ── Row 1: streak + total hours ────────────────────────────────
+                //<3<3<3<3<3 Row 1: streak + total hours <3<3<3<3<3
                 Row(
                   children: [
                     Expanded(
@@ -131,7 +116,7 @@ class StatsScreen extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // ── Row 2: sessions completed + best week ──────────────────────
+                //<3<3<3<3<3 Row 2: sessions completed + best week <3<3<3<3<3
                 Row(
                   children: [
                     Expanded(
@@ -156,15 +141,18 @@ class StatsScreen extends StatelessWidget {
 
                 const SizedBox(height: 14),
 
-                // ── Weekly bar chart ───────────────────────────────────────────
-                const _SectionHeader(label: 'Hours per week', subtitle: 'Completed study hours each week'),
+                //<3<3<3<3<3 Time per week (bar chart) <3<3<3<3<3
+                const _SectionHeader(
+                    label: 'Hours per week',
+                    subtitle: 'Completed study hours each week'),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
                   decoration: BoxDecoration(
                     color: AppColors.card,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                    border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.18), width: 1),
                   ),
                   child: state.schedule.isEmpty
                       ? Center(
@@ -191,9 +179,15 @@ class StatsScreen extends StatelessWidget {
                                       ? (b.hours / maxBar).clamp(0.0, 1.0)
                                       : 0.0;
                                   final isThisWeek = b.monday.isAtSameMomentAs(
-                                    DateTime.now().subtract(Duration(
-                                        days: DateTime.now().weekday - 1))
-                                        .copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0),
+                                    DateTime.now()
+                                        .subtract(Duration(
+                                            days: DateTime.now().weekday - 1))
+                                        .copyWith(
+                                            hour: 0,
+                                            minute: 0,
+                                            second: 0,
+                                            millisecond: 0,
+                                            microsecond: 0),
                                   );
                                   return Expanded(
                                     child: Padding(
@@ -237,18 +231,20 @@ class StatsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 6),
                             Row(
-                              children: bars.map((b) => Expanded(
-                                    child: Text(
-                                      DateFormat('d/M').format(b.monday),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.white
-                                            .withValues(alpha: 0.5),
-                                        fontSize: Ts.s(context, 15),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  )).toList(),
+                              children: bars
+                                  .map((b) => Expanded(
+                                        child: Text(
+                                          DateFormat('d/M').format(b.monday),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.white
+                                                .withValues(alpha: 0.5),
+                                            fontSize: Ts.s(context, 15),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
                             ),
                           ],
                         ),
@@ -256,7 +252,6 @@ class StatsScreen extends StatelessWidget {
 
                 const SizedBox(height: 14),
 
-                // ── Time by course (merged: actual h + goal h) ────────────────
                 if (state.courses.isNotEmpty) ...[
                   const _SectionHeader(
                     label: 'Time by course',
@@ -268,7 +263,9 @@ class StatsScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.card,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.18),
+                          width: 1),
                     ),
                     child: Column(
                       children: (() {
@@ -277,14 +274,16 @@ class StatsScreen extends StatelessWidget {
                         }).toList()
                           ..sort((a, b) => b.value.compareTo(a.value));
                         return sorted.map((entry) {
-                          final course   = entry.key;
-                          final hours    = entry.value;
-                          final color    = state.courseColorOf(course.id);
+                          final course = entry.key;
+                          final hours = entry.value;
+                          final color = state.courseColorOf(course.id);
                           final required = state.requiredHoursForCourse(course);
                           // Progress bar: against goal if available, else against total studied
                           final frac = required != null && required > 0
                               ? (hours / required).clamp(0.0, 1.0)
-                              : (totalTracked > 0 ? (hours / totalTracked).clamp(0.0, 1.0) : 0.0);
+                              : (totalTracked > 0
+                                  ? (hours / totalTracked).clamp(0.0, 1.0)
+                                  : 0.0);
                           final label = required != null
                               ? '${hours.toStringAsFixed(1)}h / ${required.toStringAsFixed(1)}h'
                               : '${hours.toStringAsFixed(1)}h';
@@ -296,7 +295,8 @@ class StatsScreen extends StatelessWidget {
                                 Row(
                                   children: [
                                     Container(
-                                      width: 10, height: 10,
+                                      width: 10,
+                                      height: 10,
                                       margin: const EdgeInsets.only(right: 7),
                                       decoration: BoxDecoration(
                                         color: color,
@@ -317,7 +317,8 @@ class StatsScreen extends StatelessWidget {
                                     Text(
                                       label,
                                       style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.75),
+                                        color: Colors.white
+                                            .withValues(alpha: 0.75),
                                         fontWeight: FontWeight.w700,
                                         fontSize: Ts.s(context, 13),
                                       ),
@@ -330,8 +331,10 @@ class StatsScreen extends StatelessWidget {
                                   child: LinearProgressIndicator(
                                     value: frac,
                                     minHeight: 7,
-                                    backgroundColor: Colors.white.withValues(alpha: 0.18),
-                                    valueColor: AlwaysStoppedAnimation<Color>(color),
+                                    backgroundColor:
+                                        Colors.white.withValues(alpha: 0.18),
+                                    valueColor:
+                                        AlwaysStoppedAnimation<Color>(color),
                                   ),
                                 ),
                               ],
@@ -376,13 +379,12 @@ class _StatTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
       ),
       child: Row(
         children: [
-          Icon(icon,
-              color: iconColor,
-              size: Ts.s(context, 28)),
+          Icon(icon, color: iconColor, size: Ts.s(context, 28)),
           const SizedBox(width: 10),
           Flexible(
             child: Column(

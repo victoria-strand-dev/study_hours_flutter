@@ -38,7 +38,6 @@ class PrivacyScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
           physics: const BouncingScrollPhysics(),
           children: [
-
             const _Section(
               icon: Icons.business_outlined,
               title: 'Data controller',
@@ -179,7 +178,8 @@ class _Section extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+          border:
+              Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -27,7 +27,7 @@ class AppState extends ChangeNotifier {
   int? get weeksRemaining => _data.weeksRemaining;
   double get totalCourseCredits => _data.totalCourseCredits;
 
-  // ─── Persist ───────────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3<3<3<3 Persist <3<3<3<3<3<3<3<3<3<3<3<3<3<3
 
   Future<void> _save() async {
     await StorageService.instance.saveAppData(_data);
@@ -37,7 +37,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  // ─── Semester settings ─────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3 Semester settings <3<3<3<3<3<3<3<3<3<3<3<3
 
   Future<void> updateSemesterSettings(
       int credits, int weeks, DateTime? startDate,
@@ -52,7 +52,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── Courses ───────────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3 Courses <3<3<3<3<3<3<3<3<3<3<3
 
   Future<void> addCourse(Course course) async {
     final updated = List<Course>.from(_data.courses)..add(course);
@@ -78,7 +78,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── Schedule ──────────────────────────────────────────────────────────────
+  Future<void> clearCourseSchedule(String courseId) async {
+    final updated =
+        _data.schedule.where((s) => s.courseId != courseId).toList();
+    _data = _data.copyWith(schedule: updated);
+    await _save();
+    notifyListeners();
+  }
+
+  //<3<3<3<3<3<3<3<3 Schedule entries <3<3<3<3<3<3<3<3
 
   Future<void> addScheduleEntry(ScheduleEntry entry) async {
     final updated = List<ScheduleEntry>.from(_data.schedule)..add(entry);
@@ -130,9 +138,8 @@ class AppState extends ChangeNotifier {
     NotificationService.instance.scheduleForEntry(updated);
   }
 
-  Future<void> updateFutureWeekdaySessions(
-      String courseId, int weekday, DateTime fromDate,
-      String newStart, String newEnd) async {
+  Future<void> updateFutureWeekdaySessions(String courseId, int weekday,
+      DateTime fromDate, String newStart, String newEnd) async {
     final from = DateTime(fromDate.year, fromDate.month, fromDate.day);
     final list = _data.schedule.map((s) {
       if (s.courseId != courseId) return s;
@@ -159,7 +166,16 @@ class AppState extends ChangeNotifier {
     NotificationService.instance.rescheduleAll(_data.schedule);
   }
 
-  // ─── Computed ──────────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3 Calendar sync <3<3<3<3<3<3<3<3
+
+  static double _parseDuration(String start, String end) {
+    double toH(String t) {
+      final p = t.split(':');
+      if (p.length < 2) return 0;
+      return (int.tryParse(p[0]) ?? 0) + (int.tryParse(p[1]) ?? 0) / 60.0;
+    }
+    return (toH(end) - toH(start)).clamp(0.0, 24.0);
+  }
 
   double completedHoursForCourse(String courseId) {
     double total = 0;
@@ -169,15 +185,6 @@ class AppState extends ChangeNotifier {
       }
     }
     return total;
-  }
-
-  static double _parseDuration(String start, String end) {
-    double toH(String t) {
-      final p = t.split(':');
-      if (p.length < 2) return 0;
-      return (int.tryParse(p[0]) ?? 0) + (int.tryParse(p[1]) ?? 0) / 60.0;
-    }
-    return (toH(end) - toH(start)).clamp(0.0, 24.0);
   }
 
   int? weeksRemainingForCourse(Course course) {
@@ -202,12 +209,7 @@ class AppState extends ChangeNotifier {
     return (course.credits / semesterCredits) * 37.5 * semesterWeeks * m;
   }
 
-  // ─── Dynamic weekly recalculation ─────────────────────────────────────────
-
-  /// Effective completed hours for a course.
-  /// In catch-up mode: adds hoursStudiedSoFar (pre-app hours) to calendar hours.
-  /// This is the single source of truth — use everywhere instead of
-  /// completedHoursForCourse when displaying progress to the user.
+  //<3<3<3<3<3<3 Grade multipliers <3<3<3<3<3<3>
   double effectiveCompletedHours(Course course) {
     final fromSchedule = completedHoursForCourse(course.id);
     return course.catchUpMode
@@ -215,27 +217,21 @@ class AppState extends ChangeNotifier {
         : fromSchedule;
   }
 
-  /// Total hours required for a given grade — uses the semester-aware formula
-  /// so it is consistent with requiredHoursForCourse (used by the progress bar).
-  /// Falls back to 25h/credit (ECTS standard) when semester settings are absent.
   double targetHoursForGrade(Course course, String grade) {
     final m = gradeMultiplier(grade) ?? 0.0;
     if (m == 0) return 0;
     if (semesterCredits > 0 && semesterWeeks > 0 && course.credits > 0) {
       return (course.credits / semesterCredits) * 37.5 * semesterWeeks * m;
     }
-    return course.credits * 25 * m; // fallback
+    return course.credits * 25 * m; 
   }
 
-  /// Remaining hours needed to reach the target grade from now.
   double remainingHours(Course course) {
     final target = targetHoursForGrade(course, course.targetGrade);
-    final done   = effectiveCompletedHours(course);
+    final done = effectiveCompletedHours(course);
     return (target - done).clamp(0.0, double.infinity);
   }
 
-  // How many hours/week are needed FROM NOW based on actual progress and time left.
-  // Returns null when no exam date is set or target is already met.
   double? dynamicWeeklyHours(Course course) {
     final weeksLeft = weeksRemainingForCourse(course);
     if (weeksLeft == null || weeksLeft <= 0) return null;
@@ -244,7 +240,6 @@ class AppState extends ChangeNotifier {
     return rem / weeksLeft;
   }
 
-  // Next grade above target (A has no next). Returns null if already at A or at F.
   String? nextGrade(Course course) {
     const order = ['F', 'E', 'D', 'C', 'B', 'A'];
     final idx = order.indexOf(course.targetGrade.toUpperCase());
@@ -252,21 +247,19 @@ class AppState extends ChangeNotifier {
     return order[idx + 1];
   }
 
-  // Returns the next achievable grade if the user's CURRENT weekly pace would
-  // reach that threshold within weeks remaining. Returns null if not possible.
   String? achievableUpgradeGrade(Course course) {
     final weeksLeft = weeksRemainingForCourse(course);
     if (weeksLeft == null || weeksLeft <= 0) return null;
     final next = nextGrade(course);
     if (next == null) return null;
 
-    // Average pace: completed hours / weeks elapsed since first session.
     final allDone = _data.schedule
         .where((e) => e.courseId == course.id && e.completed)
         .toList();
     if (allDone.isEmpty) return null;
 
-    final firstDate = allDone.map((e) => e.date).reduce((a, b) => a.isBefore(b) ? a : b);
+    final firstDate =
+        allDone.map((e) => e.date).reduce((a, b) => a.isBefore(b) ? a : b);
     final today = DateTime.now();
     final weeksElapsed = today.difference(firstDate).inDays / 7.0;
     if (weeksElapsed < 0.5) return null; // not enough data
@@ -322,15 +315,13 @@ class AppState extends ChangeNotifier {
         .toSet();
   }
 
-  // ─── User / Auth ───────────────────────────────────────────────────────────
-
+  //<3<3<3<3<3<3<3<3<3<3<3<3 User management <3<3<3<3<3<3<3<3<3<3<3<3
   Future<void> saveUserEmail(String email) async {
     _userEmail = email;
     await StorageService.instance.saveUserEmail(email);
     notifyListeners();
   }
 
-  /// Called after successful Firebase login/register.
   Future<void> setFirebaseUser(String uid, String email) async {
     _firebaseUid = uid;
     _userEmail = email;
@@ -339,15 +330,12 @@ class AppState extends ChangeNotifier {
     try {
       final cloudData = await StorageService.instance.loadFromFirestore(uid);
       if (cloudData != null) {
-        // Existing user — load cloud data
         _data = cloudData;
         await StorageService.instance.saveAppData(_data);
       } else {
-        // New user — push local data to Firestore
         await StorageService.instance.saveToFirestore(uid, _data);
       }
     } catch (_) {
-      // Cloud sync failed — continue with local data
     }
     notifyListeners();
   }
@@ -360,15 +348,10 @@ class AppState extends ChangeNotifier {
     _firebaseUid = null;
     notifyListeners();
   }
-
-  /// Deletes the user's Firestore document. Call before deleting the Auth account.
-  /// Throws if Firestore deletion fails.
   Future<void> deleteFirestoreData() async {
     if (_firebaseUid == null) return;
     await StorageService.instance.deleteUserData(_firebaseUid!);
   }
-
-  /// Clears local state after the Auth account has been deleted.
   Future<void> clearLocalAfterDelete() async {
     await StorageService.instance.clearAll();
     _data = AppData();
@@ -376,8 +359,6 @@ class AppState extends ChangeNotifier {
     _firebaseUid = null;
     notifyListeners();
   }
-
-  /// Legacy — kept for compatibility.
   Future<void> deleteAccount() async {
     await deleteFirestoreData();
     await FirebaseAuth.instance.currentUser?.delete();
@@ -385,7 +366,7 @@ class AppState extends ChangeNotifier {
   }
 }
 
-// ─── Provider Widget ──────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3 Provider <3<3<3<3<3<3<3<3<3
 
 class AppStateProvider extends InheritedNotifier<AppState> {
   const AppStateProvider({

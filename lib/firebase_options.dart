@@ -83,5 +83,4 @@ class DefaultFirebaseOptions {
     authDomain: 'vssstudiostudyhour.firebaseapp.com',
     storageBucket: 'vssstudiostudyhour.firebasestorage.app',
   );
-
 }

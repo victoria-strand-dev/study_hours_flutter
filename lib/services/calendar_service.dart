@@ -3,11 +3,12 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import '../models/models.dart';
 
-/// Result from a calendar operation — null message means success.
 class CalendarResult {
   final bool success;
   final String? errorMessage;
-  const CalendarResult.ok() : success = true, errorMessage = null;
+  const CalendarResult.ok()
+      : success = true,
+        errorMessage = null;
   const CalendarResult.err(this.errorMessage) : success = false;
 }
 
@@ -29,7 +30,6 @@ class CalendarService {
     return result.data == true;
   }
 
-  /// Returns a writable calendar ID — prefers one named 'StudyHours', falls back to first writable.
   Future<String?> _calendarId() async {
     final result = await _plugin.retrieveCalendars();
     final calendars = result.data ?? [];
@@ -38,10 +38,7 @@ class CalendarService {
         .where((c) => c.name?.toLowerCase() == 'studyhours')
         .firstOrNull;
     if (study != null) return study.id;
-    return calendars
-        .where((c) => !(c.isReadOnly ?? true))
-        .firstOrNull
-        ?.id;
+    return calendars.where((c) => !(c.isReadOnly ?? true)).firstOrNull?.id;
   }
 
   tz.TZDateTime _toTZ(DateTime date, String time) {
@@ -51,7 +48,6 @@ class CalendarService {
     return tz.TZDateTime(tz.local, date.year, date.month, date.day, h, m);
   }
 
-  /// Adds a single study session to the device calendar.
   Future<CalendarResult> addEvent(ScheduleEntry entry) async {
     _ensureTz();
     if (!await _requestPermission()) {
@@ -78,8 +74,6 @@ class CalendarService {
         errors.isNotEmpty ? errors : 'Failed to create event');
   }
 
-  /// Adds all sessions in [entries] to the device calendar.
-  /// Returns (successCount, errorMessage).
   Future<(int, String?)> addEvents(List<ScheduleEntry> entries) async {
     _ensureTz();
     if (!await _requestPermission()) {

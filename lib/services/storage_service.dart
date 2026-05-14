@@ -9,9 +9,9 @@ import '../models/models.dart';
 /// security rules to be deployed first. Until then the app uses the
 /// single-document format: users/{uid}  →  { appData: { ... } }
 class StorageService {
-  static const _appDataKey       = 'app_data';
-  static const _userEmailKey     = 'user_email';
-  static const _onboardingKey    = 'onboarding_done';
+  static const _appDataKey = 'app_data';
+  static const _userEmailKey = 'user_email';
+  static const _onboardingKey = 'onboarding_done';
 
   static StorageService? _instance;
   static StorageService get instance => _instance ??= StorageService._();
@@ -28,7 +28,7 @@ class StorageService {
     return _prefs!;
   }
 
-  // ─── Local cache (SharedPreferences) ──────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3 Local cache <3<3<3<3<3<3<3<3<3<3<3
 
   AppData loadAppData() {
     final json = _p.getString(_appDataKey);
@@ -55,10 +55,9 @@ class StorageService {
   }
 
   bool get onboardingDone => _p.getBool(_onboardingKey) ?? false;
-  Future<void> setOnboardingDone() async =>
-      _p.setBool(_onboardingKey, true);
+  Future<void> setOnboardingDone() async => _p.setBool(_onboardingKey, true);
 
-  // ─── Firestore ─────────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3<3<3<3 Firestore <3<3<3<3<3<3<3<3<3<3<3<3<3<3
 
   DocumentReference _userDoc(String uid) =>
       FirebaseFirestore.instance.collection('users').doc(uid);
@@ -68,7 +67,6 @@ class StorageService {
     await _userDoc(uid).set({'appData': data.toJson()});
   }
 
-  /// Download AppData from Firestore. Returns null if no document exists yet.
   Future<AppData?> loadFromFirestore(String uid) async {
     final doc = await _userDoc(uid).get();
     if (!doc.exists) return null;
@@ -81,7 +79,6 @@ class StorageService {
     }
   }
 
-  /// Delete the user's Firestore document (and local cache).
   Future<void> deleteUserData(String uid) async {
     await _userDoc(uid).delete();
   }

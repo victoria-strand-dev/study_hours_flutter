@@ -9,7 +9,7 @@ import 'privacy_screen.dart';
 import 'settings_screen.dart';
 import 'terms_screen.dart';
 
-// ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3<3 Login screen <3<3<3<3<3<3<3<3<3<3<3
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -43,8 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final cred = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       if (!mounted) return;
-      await AppStateProvider.of(context)
-          .setFirebaseUser(cred.user!.uid, email);
+      await AppStateProvider.of(context).setFirebaseUser(cred.user!.uid, email);
       if (!mounted) return;
       // Existing login → go straight to app
       Navigator.pushReplacement(
@@ -59,8 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.redAccent));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: Colors.redAccent));
   }
 
   Future<void> _forgotPassword() async {
@@ -83,11 +82,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String _authMessage(String code) {
     switch (code) {
-      case 'user-not-found': return 'No account with that email';
-      case 'wrong-password': return 'Wrong password';
-      case 'invalid-credential': return 'Invalid email or password';
-      case 'too-many-requests': return 'Too many attempts — try again later';
-      default: return 'Login failed ($code)';
+      case 'user-not-found':
+        return 'No account with that email';
+      case 'wrong-password':
+        return 'Wrong password';
+      case 'invalid-credential':
+        return 'Invalid email or password';
+      case 'too-many-requests':
+        return 'Too many attempts — try again later';
+      default:
+        return 'Login failed ($code)';
     }
   }
 
@@ -106,14 +110,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: [
               SizedBox(height: size.height * 0.04),
-
               SvgPicture.asset(
                 'assets/images/logoselfmade.svg',
                 height: logoH,
               ),
-
               SizedBox(height: size.height * 0.02),
-
               Text(
                 'LOGIN',
                 style: TextStyle(
@@ -123,15 +124,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   letterSpacing: 2,
                 ),
               ),
-
               SizedBox(height: size.height * 0.04),
-
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.card,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                  border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.18), width: 1),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.cardDark.withValues(alpha: 0.15),
@@ -211,9 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-
               SizedBox(height: size.height * 0.025),
-
               Text(
                 'OR',
                 style: TextStyle(
@@ -223,9 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   letterSpacing: 2,
                 ),
               ),
-
               SizedBox(height: size.height * 0.02),
-
               OutlinedButton(
                 onPressed: () => Navigator.push(
                   context,
@@ -251,9 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: size.height * 0.02),
-
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
@@ -269,7 +263,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: size.height * 0.02),
             ],
           ),
@@ -279,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// ─── LOGIN FIELD ──────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3 Login field <3<3<3<3<3<3<3<3<3
 
 class _LoginField extends StatelessWidget {
   final TextEditingController controller;
@@ -303,7 +296,8 @@ class _LoginField extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
       ),
       child: TextField(
         controller: controller,
@@ -331,7 +325,7 @@ class _LoginField extends StatelessWidget {
   }
 }
 
-// ─── REGISTER SCREEN ──────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3 Register screen <3<3<3<3<3<3<3<3<3
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -387,11 +381,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final cred = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       if (!mounted) return;
-      await AppStateProvider.of(context)
-          .setFirebaseUser(cred.user!.uid, email);
+      await AppStateProvider.of(context).setFirebaseUser(cred.user!.uid, email);
       if (!mounted) return;
       Navigator.pushReplacement(
-          context, MaterialPageRoute(
+          context,
+          MaterialPageRoute(
               builder: (_) => const SettingsScreen(firstTime: true)));
     } on FirebaseAuthException catch (e) {
       _showError(_authMessage(e.code));
@@ -403,16 +397,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.redAccent));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: Colors.redAccent));
   }
 
   String _authMessage(String code) {
     switch (code) {
-      case 'email-already-in-use': return 'An account already exists with that email';
-      case 'invalid-email': return 'Invalid email address';
-      case 'weak-password': return 'Password is too weak';
-      default: return 'Registration failed ($code)';
+      case 'email-already-in-use':
+        return 'An account already exists with that email';
+      case 'invalid-email':
+        return 'Invalid email address';
+      case 'weak-password':
+        return 'Password is too weak';
+      default:
+        return 'Registration failed ($code)';
     }
   }
 
@@ -452,7 +450,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.card,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                  border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.18), width: 1),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.cardDark.withValues(alpha: 0.15),
@@ -514,8 +513,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                color: AppColors.textDark.withValues(alpha: 0.85),
-                                fontSize: (size.width * 0.033).clamp(11.0, 14.0),
+                                color:
+                                    AppColors.textDark.withValues(alpha: 0.85),
+                                fontSize:
+                                    (size.width * 0.033).clamp(11.0, 14.0),
                                 fontWeight: FontWeight.w500,
                               ),
                               children: [
@@ -538,7 +539,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 ),
                                 const TextSpan(
-                                    text: ', and consent to the processing of my personal data.'),
+                                    text:
+                                        ', and consent to the processing of my personal data.'),
                               ],
                             ),
                           ),
@@ -565,7 +567,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             : Text(
                                 'REGISTER',
                                 style: TextStyle(
-                                  fontSize: (size.width * 0.048).clamp(16.0, 22.0),
+                                  fontSize:
+                                      (size.width * 0.048).clamp(16.0, 22.0),
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: 1.5,
                                 ),

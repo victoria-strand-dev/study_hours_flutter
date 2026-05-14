@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+
 import '../theme/app_colors.dart';
 import '../theme/app_text.dart';
 import '../state/app_state.dart';
 import '../models/models.dart';
 import '../widgets/shared_widgets.dart';
 
-// Sub-modes
-const int _subTarget = 0; // target grade → hours/day needed
-const int _subGrade  = 1; // hours/day given → expected grade
+const int _subTarget = 0; 
+const int _subGrade = 1; 
 
 class CalculateScreen extends StatefulWidget {
   final Course? course;
@@ -23,20 +23,21 @@ class _CalculateScreenState extends State<CalculateScreen>
     with SingleTickerProviderStateMixin {
   int _subMode = _subTarget;
 
-  final _courseNameCtrl     = TextEditingController();
-  final _courseCreditsCtrl  = TextEditingController(text: '10');
-  final _hoursPerDayCtrl    = TextEditingController(text: '2');
-  final _desiredGradeCtrl   = TextEditingController(text: 'A');
-  final _daysPerWeekCtrl    = TextEditingController(text: '2');
+  final _courseNameCtrl = TextEditingController();
+  final _courseCreditsCtrl = TextEditingController(text: '10');
+  final _hoursPerDayCtrl = TextEditingController(text: '2');
+  final _desiredGradeCtrl = TextEditingController(text: 'A');
+  final _daysPerWeekCtrl = TextEditingController(text: '2');
   final _hoursStudiedCtrl = TextEditingController(text: '0');
   DateTime? _examDate;
-  int _selectedColor = 0; // 0 = auto-assign from presets
+  int _selectedColor = 0; 
 
   int get _weeksRemaining {
     if (_examDate == null) return 0;
-    final today     = DateTime.now();
+    final today = DateTime.now();
     final todayOnly = DateTime(today.year, today.month, today.day);
-    final examOnly  = DateTime(_examDate!.year, _examDate!.month, _examDate!.day);
+    final examOnly =
+        DateTime(_examDate!.year, _examDate!.month, _examDate!.day);
     final diff = examOnly.difference(todayOnly).inDays;
     return diff <= 0 ? 0 : ((diff - 1) ~/ 7) + 1;
   }
@@ -53,8 +54,11 @@ class _CalculateScreenState extends State<CalculateScreen>
     _animCtrl.forward();
 
     for (final c in [
-      _courseCreditsCtrl, _hoursPerDayCtrl, _desiredGradeCtrl,
-      _daysPerWeekCtrl, _hoursStudiedCtrl,
+      _courseCreditsCtrl,
+      _hoursPerDayCtrl,
+      _desiredGradeCtrl,
+      _daysPerWeekCtrl,
+      _hoursStudiedCtrl,
     ]) {
       c.addListener(_refresh);
     }
@@ -70,14 +74,15 @@ class _CalculateScreenState extends State<CalculateScreen>
     if (widget.course != null) {
       final c = widget.course!;
       _courseNameCtrl.text = c.name;
-      _courseCreditsCtrl.text =
-          c.credits % 1 == 0 ? c.credits.toInt().toString() : c.credits.toString();
+      _courseCreditsCtrl.text = c.credits % 1 == 0
+          ? c.credits.toInt().toString()
+          : c.credits.toString();
       _hoursPerDayCtrl.text = c.hoursPerDay.toString();
       _daysPerWeekCtrl.text = c.daysPerWeek.toString();
       _desiredGradeCtrl.text = c.targetGrade;
       _subMode = c.hoursMode ? _subTarget : _subGrade;
 
-      final completed    = state.completedHoursForCourse(c.id);
+      final completed = state.completedHoursForCourse(c.id);
       final studiedValue = completed > 0 ? completed : c.hoursStudiedSoFar;
       if (studiedValue > 0) {
         _hoursStudiedCtrl.text = studiedValue.toStringAsFixed(1);
@@ -126,49 +131,81 @@ class _CalculateScreenState extends State<CalculateScreen>
   void _showError(String msg) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
 
-  // ─── Calculations ──────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3 Calculations <3<3<3<3<3<3<3<3<3<3<3<3
 
-  /// Hours/day needed from now to reach [grade]
-  double? _computeHoursNeeded(int semCredits, int semWeeks,
-      double courseCredits, String grade, double hoursStudied,
-      int weeksRemaining, int daysPerWeek) {
-    if (semCredits <= 0 || semWeeks <= 0 || courseCredits <= 0 ||
-        weeksRemaining <= 0 || daysPerWeek <= 0) { return null; }
+  double? _computeHoursNeeded(
+      int semCredits,
+      int semWeeks,
+      double courseCredits,
+      String grade,
+      double hoursStudied,
+      int weeksRemaining,
+      int daysPerWeek) {
+    if (semCredits <= 0 ||
+        semWeeks <= 0 ||
+        courseCredits <= 0 ||
+        weeksRemaining <= 0 ||
+        daysPerWeek <= 0) {
+      return null;
+    }
     final mult = gradeMultiplier(grade);
-    if (mult == null) { return null; }
-    final totalRequired =
-        (courseCredits / semCredits) * 37.5 * semWeeks * mult;
+    if (mult == null) {
+      return null;
+    }
+    final totalRequired = (courseCredits / semCredits) * 37.5 * semWeeks * mult;
     final remaining = totalRequired - hoursStudied;
-    if (remaining <= 0) { return 0.0; }
+    if (remaining <= 0) {
+      return 0.0;
+    }
     return remaining / weeksRemaining / daysPerWeek;
   }
 
-  /// Expected grade based on projected total hours (studied + future)
-  String _computeExpectedGrade(int semCredits, int semWeeks,
-      double courseCredits, double hoursStudied, double hoursPerDay,
-      int daysPerWeek, int weeksRemaining) {
-    if (semCredits <= 0 || semWeeks <= 0 || courseCredits <= 0 ||
-        hoursPerDay <= 0 || daysPerWeek <= 0 || weeksRemaining <= 0) { return '?'; }
+  String _computeExpectedGrade(
+      int semCredits,
+      int semWeeks,
+      double courseCredits,
+      double hoursStudied,
+      double hoursPerDay,
+      int daysPerWeek,
+      int weeksRemaining) {
+    if (semCredits <= 0 ||
+        semWeeks <= 0 ||
+        courseCredits <= 0 ||
+        hoursPerDay <= 0 ||
+        daysPerWeek <= 0 ||
+        weeksRemaining <= 0) {
+      return '?';
+    }
     final projected =
         hoursStudied + (hoursPerDay * daysPerWeek * weeksRemaining);
     final base = (courseCredits / semCredits) * 37.5 * semWeeks;
     final ratio = projected / base;
-    if (ratio >= 0.9) { return 'A'; }
-    if (ratio >= 0.8) { return 'B'; }
-    if (ratio >= 0.6) { return 'C'; }
-    if (ratio >= 0.5) { return 'D'; }
-    if (ratio >= 0.4) { return 'E'; }
+    if (ratio >= 0.9) {
+      return 'A';
+    }
+    if (ratio >= 0.8) {
+      return 'B';
+    }
+    if (ratio >= 0.6) {
+      return 'C';
+    }
+    if (ratio >= 0.5) {
+      return 'D';
+    }
+    if (ratio >= 0.4) {
+      return 'E';
+    }
     return 'F';
   }
 
-  // ─── Live result ───────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3 result text <3<3<3<3<3<3<3<3<3<3<3<3
 
   String? _buildResultText(AppState state) {
-    final credits  = double.tryParse(_courseCreditsCtrl.text.trim()) ?? 0;
-    final days     = int.tryParse(_daysPerWeekCtrl.text.trim()) ?? 0;
-    final studied  = double.tryParse(_hoursStudiedCtrl.text.trim()) ?? -1;
+    final credits = double.tryParse(_courseCreditsCtrl.text.trim()) ?? 0;
+    final days = int.tryParse(_daysPerWeekCtrl.text.trim()) ?? 0;
+    final studied = double.tryParse(_hoursStudiedCtrl.text.trim()) ?? -1;
     final weeksRem = _weeksRemaining;
-    final daysLbl  = days == 1 ? '1 day' : '$days days';
+    final daysLbl = days == 1 ? '1 day' : '$days days';
 
     if (credits <= 0 || days <= 0 || studied < 0 || weeksRem <= 0) return null;
 
@@ -191,14 +228,14 @@ class _CalculateScreenState extends State<CalculateScreen>
 
   bool _validGrade(String g) => ['A', 'B', 'C', 'D', 'E', 'F'].contains(g);
 
-  // ─── Save ──────────────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3<3 Saving <3<3<3<3<3<3<3<3<3<3<3<3>
 
   Future<void> _saveCourse() async {
-    final state   = AppStateProvider.of(context);
-    final name    = _courseNameCtrl.text.trim();
+    final state = AppStateProvider.of(context);
+    final name = _courseNameCtrl.text.trim();
     final credits = double.tryParse(_courseCreditsCtrl.text.trim()) ?? 0;
-    final days    = int.tryParse(_daysPerWeekCtrl.text.trim()) ?? 0;
-    final studied  = double.tryParse(_hoursStudiedCtrl.text.trim()) ?? -1;
+    final days = int.tryParse(_daysPerWeekCtrl.text.trim()) ?? 0;
+    final studied = double.tryParse(_hoursStudiedCtrl.text.trim()) ?? -1;
     final weeksRem = _weeksRemaining;
 
     if (name.isEmpty || credits <= 0 || days <= 0) {
@@ -238,7 +275,7 @@ class _CalculateScreenState extends State<CalculateScreen>
         return;
       }
       targetGrade = desired;
-      savedHours  = h <= 0 ? 0 : h;
+      savedHours = h <= 0 ? 0 : h;
     } else {
       final hpd = double.tryParse(_hoursPerDayCtrl.text.trim()) ?? 0;
       if (hpd <= 0) {
@@ -251,17 +288,17 @@ class _CalculateScreenState extends State<CalculateScreen>
     }
 
     final newCourse = Course(
-      id:                widget.course?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      name:              name,
-      credits:           credits,
-      targetGrade:       targetGrade,
-      hoursPerDay:       savedHours,
-      daysPerWeek:       days,
-      hoursMode:         _subMode == _subTarget,
-      catchUpMode:       true,
-      examDate:          _examDate,
+      id: widget.course?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      credits: credits,
+      targetGrade: targetGrade,
+      hoursPerDay: savedHours,
+      daysPerWeek: days,
+      hoursMode: _subMode == _subTarget,
+      catchUpMode: true,
+      examDate: _examDate,
       hoursStudiedSoFar: studied,
-      color:             _selectedColor,
+      color: _selectedColor,
     );
 
     if (widget.course != null) {
@@ -273,12 +310,12 @@ class _CalculateScreenState extends State<CalculateScreen>
     Navigator.pop(context);
   }
 
-  // ─── Build ─────────────────────────────────────────────────────────────────
+  //<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3 build <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<>
 
   @override
   Widget build(BuildContext context) {
-    final state      = AppStateProvider.of(context);
-    final size       = MediaQuery.of(context).size;
+    final state = AppStateProvider.of(context);
+    final size = MediaQuery.of(context).size;
     final double hPad = (size.width * 0.06).clamp(16.0, 48.0);
     final resultText = _buildResultText(state);
 
@@ -296,7 +333,8 @@ class _CalculateScreenState extends State<CalculateScreen>
                 formatters: const [],
               ),
               const SizedBox(height: 12),
-              _SubModeSelector(subMode: _subMode, onSwitch: _switchSub, size: size),
+              _SubModeSelector(
+                  subMode: _subMode, onSwitch: _switchSub, size: size),
               const SizedBox(height: 12),
               Expanded(
                 child: SingleChildScrollView(
@@ -306,18 +344,18 @@ class _CalculateScreenState extends State<CalculateScreen>
                     child: Column(
                       children: [
                         _InputCard(
-                          subMode:           _subMode,
+                          subMode: _subMode,
                           courseCreditsCtrl: _courseCreditsCtrl,
-                          hoursPerDayCtrl:   _hoursPerDayCtrl,
-                          desiredGradeCtrl:  _desiredGradeCtrl,
-                          daysPerWeekCtrl:   _daysPerWeekCtrl,
-                          hoursStudiedCtrl:  _hoursStudiedCtrl,
+                          hoursPerDayCtrl: _hoursPerDayCtrl,
+                          desiredGradeCtrl: _desiredGradeCtrl,
+                          daysPerWeekCtrl: _daysPerWeekCtrl,
+                          hoursStudiedCtrl: _hoursStudiedCtrl,
                         ),
                         const SizedBox(height: 8),
                         _ExamDateRow(
                           examDate: _examDate,
-                          onPick:   _pickExamDate,
-                          onClear:  _clearExamDate,
+                          onPick: _pickExamDate,
+                          onClear: _clearExamDate,
                         ),
                         const SizedBox(height: 8),
                         _ColorPickerRow(
@@ -361,7 +399,7 @@ class _CalculateScreenState extends State<CalculateScreen>
   }
 }
 
-// ─── RESULT CARD ──────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3<3 RESULT CARD <3<3<3<3<3<3<3<3<3<3<3<3<3
 
 class _ResultCard extends StatelessWidget {
   final String text;
@@ -375,7 +413,8 @@ class _ResultCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
       ),
       child: Text(
         text,
@@ -390,7 +429,7 @@ class _ResultCard extends StatelessWidget {
   }
 }
 
-// ─── SUB-MODE SELECTOR ────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3<3 Sub-mode selector <3<3<3<3<3<3<3<3<3<3<3<3
 
 class _SubModeSelector extends StatelessWidget {
   final int subMode;
@@ -407,7 +446,8 @@ class _SubModeSelector extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
       ),
       child: Row(
         children: [
@@ -481,7 +521,7 @@ class _ModeTab extends StatelessWidget {
   }
 }
 
-// ─── INPUT CARD ───────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3<3 input field <3<3<3<3<3<3<3<3<3<3<3<3<3
 
 class _InputCard extends StatelessWidget {
   final int subMode;
@@ -507,7 +547,8 @@ class _InputCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
         boxShadow: [
           BoxShadow(
               color: AppColors.cardDark.withValues(alpha: 0.12),
@@ -568,7 +609,7 @@ class _InputCard extends StatelessWidget {
   }
 }
 
-// ─── EXAM DATE ROW ────────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3<3 Exam date row <3<3<3<3<3<3<3<3<3<3>
 
 class _ExamDateRow extends StatelessWidget {
   final DateTime? examDate;
@@ -583,8 +624,8 @@ class _ExamDateRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size  = MediaQuery.of(context).size;
-    final fs    = (size.width * 0.033).clamp(11.0, 15.0);
+    final size = MediaQuery.of(context).size;
+    final fs = (size.width * 0.033).clamp(11.0, 15.0);
     final label = examDate != null
         ? 'Exam: ${DateFormat('d MMM yyyy').format(examDate!)}'
         : 'Set exam date (required)';
@@ -596,7 +637,8 @@ class _ExamDateRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: examDate != null ? AppColors.cardDark : AppColors.card,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+          border:
+              Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
         ),
         child: Row(
           children: [
@@ -610,9 +652,7 @@ class _ExamDateRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: fs,
                   fontWeight: FontWeight.w700,
-                  color: examDate != null
-                      ? Colors.white
-                      : AppColors.accent,
+                  color: examDate != null ? Colors.white : AppColors.accent,
                 ),
               ),
             ),
@@ -629,7 +669,7 @@ class _ExamDateRow extends StatelessWidget {
   }
 }
 
-// ─── COLOR PICKER ROW ─────────────────────────────────────────────────────────
+//<3<3<3<3<3<3<3<3<3<3<3 course color <3<3<3<3<3<3<3<3<3<3<3<3>
 
 class _ColorPickerRow extends StatelessWidget {
   final int selectedColor;
@@ -643,14 +683,16 @@ class _ColorPickerRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.palette_rounded, color: Colors.white70, size: 18),
+              const Icon(Icons.palette_rounded,
+                  color: Colors.white70, size: 18),
               const SizedBox(width: 8),
               const Text(
                 'Course colour',
@@ -695,11 +737,16 @@ class _ColorPickerRow extends StatelessWidget {
                       width: 3,
                     ),
                     boxShadow: isSelected
-                        ? [BoxShadow(color: Color(c).withValues(alpha: 0.6), blurRadius: 8)]
+                        ? [
+                            BoxShadow(
+                                color: Color(c).withValues(alpha: 0.6),
+                                blurRadius: 8)
+                          ]
                         : null,
                   ),
                   child: isSelected
-                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 16)
+                      ? const Icon(Icons.check_rounded,
+                          color: Colors.white, size: 16)
                       : null,
                 ),
               );
@@ -739,7 +786,8 @@ class _CalcField extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.inputBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+          border:
+              Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
         ),
         child: Column(
           children: [

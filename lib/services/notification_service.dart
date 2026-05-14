@@ -33,7 +33,6 @@ class NotificationService {
       const InitializationSettings(android: android, iOS: ios),
     );
 
-    // Request POST_NOTIFICATIONS permission on Android 13+
     await _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
@@ -42,10 +41,7 @@ class NotificationService {
     _initialized = true;
   }
 
-  /// Stable notification ID derived from entry id.
   int _idFor(String entryId) => entryId.hashCode.abs() % 2147483647;
-
-  /// Schedule a 15-minute-before reminder for a single future, incomplete entry.
   Future<void> scheduleForEntry(ScheduleEntry entry) async {
     if (!_initialized) return;
     if (entry.completed) return;
@@ -71,7 +67,7 @@ class NotificationService {
       entry.courseName,
       'Starts in 15 min · ${entry.startTime}–${entry.endTime}',
       notifyAt,
-      NotificationDetails(
+      const NotificationDetails(
         android: AndroidNotificationDetails(
           _channelId,
           _channelName,
@@ -80,7 +76,7 @@ class NotificationService {
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: const DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -88,14 +84,11 @@ class NotificationService {
     );
   }
 
-  /// Cancel the reminder for a single entry.
   Future<void> cancelForEntry(String entryId) async {
     if (!_initialized) return;
     await _plugin.cancel(_idFor(entryId));
   }
 
-  /// Cancel all pending notifications and reschedule from the provided list.
-  /// Only schedules the next 50 future, incomplete sessions (iOS limit is 64).
   Future<void> rescheduleAll(List<ScheduleEntry> entries) async {
     if (!_initialized) return;
     await _plugin.cancelAll();

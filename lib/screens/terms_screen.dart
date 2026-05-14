@@ -23,8 +23,7 @@ class TermsScreen extends StatelessWidget {
             ),
             _TermsSection(
               title: 'Who can use StudyHours',
-              body:
-                  'StudyHours is intended for users aged 13 and above. '
+              body: 'StudyHours is intended for users aged 13 and above. '
                   'In the EU/EEA the minimum age is 16 unless a parent or legal guardian provides consent. '
                   'By registering you confirm that you meet the applicable age requirement.',
             ),
@@ -37,15 +36,13 @@ class TermsScreen extends StatelessWidget {
             ),
             _TermsSection(
               title: 'Acceptable use',
-              body:
-                  'StudyHours is a personal study-tracking tool. '
+              body: 'StudyHours is a personal study-tracking tool. '
                   'You may not use the app to violate any applicable law, infringe third-party rights, '
                   'or attempt to reverse-engineer the service.',
             ),
             _TermsSection(
               title: 'Your data',
-              body:
-                  'You own the study data you enter into the app. '
+              body: 'You own the study data you enter into the app. '
                   'We process it solely to provide the service. '
                   'See our Privacy Policy for full details on data handling.',
             ),
@@ -57,15 +54,13 @@ class TermsScreen extends StatelessWidget {
             ),
             _TermsSection(
               title: 'Changes to these terms',
-              body:
-                  'We may update these terms from time to time. '
+              body: 'We may update these terms from time to time. '
                   'Continued use of the app after changes constitutes acceptance of the updated terms. '
                   'We will notify you of significant changes.',
             ),
             _TermsSection(
               title: 'Governing law',
-              body:
-                  'These terms are governed by Norwegian law. '
+              body: 'These terms are governed by Norwegian law. '
                   'Any disputes shall be resolved in Norwegian courts.',
             ),
             _TermsSection(
@@ -95,7 +90,8 @@ class _TermsSection extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+          border:
+              Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

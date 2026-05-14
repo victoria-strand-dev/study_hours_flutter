@@ -160,7 +160,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: AppColors.bg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         title: const Text('Delete Account',
-            style: TextStyle(color: Color(0xFFC0392B), fontWeight: FontWeight.w800)),
+            style: TextStyle(
+                color: Color(0xFFC0392B), fontWeight: FontWeight.w800)),
         content: const Text(
           'This will permanently delete your account and all study data. This cannot be undone.',
           style: TextStyle(color: AppColors.textDark),
@@ -169,14 +170,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: const Text('Cancel',
-                  style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600))),
+                  style: TextStyle(
+                      color: AppColors.textDark, fontWeight: FontWeight.w600))),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFC0392B),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10))),
             child: const Text('Continue',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -190,9 +194,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
           backgroundColor: AppColors.bg,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           title: const Text('Confirm your password',
-              style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w800)),
+              style: TextStyle(
+                  color: AppColors.textDark, fontWeight: FontWeight.w800)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -204,18 +210,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextField(
                 controller: passwordCtrl,
                 obscureText: obscure,
-                style: const TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: AppColors.textDark, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: const TextStyle(color: AppColors.textDark),
                   filled: true,
                   fillColor: AppColors.card,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none),
                   suffixIcon: GestureDetector(
                     onTap: () => setState(() => obscure = !obscure),
-                    child: Icon(obscure ? Icons.visibility_off : Icons.visibility,
-                        color: Colors.white54, size: 20),
+                    child: Icon(
+                        obscure ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.white54,
+                        size: 20),
                   ),
                 ),
               ),
@@ -225,14 +235,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
                 child: const Text('Cancel',
-                    style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600))),
+                    style: TextStyle(
+                        color: AppColors.textDark,
+                        fontWeight: FontWeight.w600))),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFC0392B),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
               child: const Text('Delete Account',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w700)),
             ),
           ],
         ),
@@ -320,8 +334,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10))),
             child: const Text('Log out',
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -349,14 +363,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
           physics: const BouncingScrollPhysics(),
           children: [
-
-            // ── Avatar / email card ──────────────────────────────────────────
             Container(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               decoration: BoxDecoration(
                 color: AppColors.card,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.18), width: 1),
               ),
               child: Column(
                 children: [
@@ -366,7 +379,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.cardDark,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.18),
+                          width: 1),
                     ),
                     child: const Icon(Icons.person_rounded,
                         color: Colors.white, size: 36),
@@ -386,7 +401,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 20),
 
-            // ── Account ──────────────────────────────────────────────────────
+            //<3<3<3<3<3<3 Account settings <3<3<3<3<3<3
             const _SectionLabel(label: 'ACCOUNT'),
             _SettingsGroup(children: [
               _SettingsRow(
@@ -398,7 +413,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 20),
 
-            // ── Legal ────────────────────────────────────────────────────────
+            //<3<3<3<3<3<3<3<3 polycies <3<3<3<3<3<3<3<3<3
             const _SectionLabel(label: 'LEGAL'),
             _SettingsGroup(children: [
               _SettingsRow(
@@ -418,7 +433,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 28),
 
-            // ── Log out ──────────────────────────────────────────────────────
+            //<3<3<3<3<3<3<3<3<3 logout <3<3<3<3<3<3<3<3<3
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -439,7 +454,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 10),
 
-            // ── Delete account ───────────────────────────────────────────────
+            //<3<3<3<3<3 Delete account <3<3<3<3<3<3
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -466,10 +481,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// ── Shared section components ─────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
-  final String label;
+  final String label; 
   const _SectionLabel({required this.label});
 
   @override
@@ -499,7 +513,8 @@ class _SettingsGroup extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+        border:
+            Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
       ),
       child: Column(children: children),
     );

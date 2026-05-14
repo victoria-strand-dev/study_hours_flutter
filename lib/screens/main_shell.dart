@@ -26,11 +26,16 @@ class _MainShellState extends State<MainShell> {
 
   Widget get _currentScreen {
     switch (_currentIndex) {
-      case 0:  return HomeScreen(onNavTap: _onNavTap);
-      case 1:  return CalendarScreen(onNavTap: _onNavTap);
-      case 2:  return CoursesScreen(onNavTap: _onNavTap);
-      case 3:  return StatsScreen(onNavTap: _onNavTap);
-      default: return HomeScreen(onNavTap: _onNavTap);
+      case 0:
+        return HomeScreen(onNavTap: _onNavTap);
+      case 1:
+        return CalendarScreen(onNavTap: _onNavTap);
+      case 2:
+        return CoursesScreen(onNavTap: _onNavTap);
+      case 3:
+        return StatsScreen(onNavTap: _onNavTap);
+      default:
+        return HomeScreen(onNavTap: _onNavTap);
     }
   }
 

@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text.dart';
 import '../state/app_state.dart';
 import '../widgets/shared_widgets.dart';
+import '../widgets/dialogs/confirm_dialog.dart';
 import 'main_shell.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _semesterCreditsCtrl = TextEditingController();
-  final _semesterWeeksCtrl   = TextEditingController();
+  final _semesterWeeksCtrl = TextEditingController();
   DateTime? _startDate;
   bool _saved = false;
 
@@ -60,40 +61,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _clearStartDate() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Clear start date',
-            style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w800)),
-        content: const Text('Remove the semester start date?',
-            style: TextStyle(color: AppColors.textDark)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600)),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.cardDark,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('Clear',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-          ),
-        ],
-      ),
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Clear start date',
+      message: 'Remove the semester start date?',
+      confirmLabel: 'Clear',
     );
-    if (confirmed == true) setState(() => _startDate = null);
+    if (confirmed) setState(() => _startDate = null);
   }
 
   Future<void> _save() async {
-    final state   = AppStateProvider.of(context);
-    final credits = int.tryParse(_semesterCreditsCtrl.text.trim()) ?? state.semesterCredits;
-    final weeks   = int.tryParse(_semesterWeeksCtrl.text.trim()) ?? state.semesterWeeks;
+    final state = AppStateProvider.of(context);
+    final credits =
+        int.tryParse(_semesterCreditsCtrl.text.trim()) ?? state.semesterCredits;
+    final weeks =
+        int.tryParse(_semesterWeeksCtrl.text.trim()) ?? state.semesterWeeks;
 
     await state.updateSemesterSettings(
       credits,
@@ -111,8 +93,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     setState(() => _saved = true);
-    Future.delayed(const Duration(seconds: 2),
-        () { if (mounted) setState(() => _saved = false); });
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _saved = false);
+    });
   }
 
   @override
@@ -121,8 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final double hPad = (size.width * 0.07).clamp(20.0, 52.0);
 
     return Scaffold(
-      appBar: buildAppBar(context, 'SEMESTER',
-          showBack: !widget.firstTime),
+      appBar: buildAppBar(context, 'SEMESTER', showBack: !widget.firstTime),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 16),
@@ -134,7 +116,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.card,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                  border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.18), width: 1),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +137,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: StyledInput(
                             label: 'Total Credits',
                             controller: _semesterCreditsCtrl,
-                            keyboardType: const TextInputType.numberWithOptions(),
+                            keyboardType:
+                                const TextInputType.numberWithOptions(),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -162,7 +146,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: StyledInput(
                             label: 'Total Weeks',
                             controller: _semesterWeeksCtrl,
-                            keyboardType: const TextInputType.numberWithOptions(),
+                            keyboardType:
+                                const TextInputType.numberWithOptions(),
                           ),
                         ),
                       ],
@@ -172,11 +157,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: _pickStartDate,
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 14),
                         decoration: BoxDecoration(
                           color: AppColors.inputBg,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 1),
+                          border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                              width: 1),
                         ),
                         child: Row(
                           children: [
@@ -197,7 +185,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 const SizedBox(height: 2),
                                 Text(
                                   _startDate != null
-                                      ? DateFormat('d MMM yyyy').format(_startDate!)
+                                      ? DateFormat('d MMM yyyy')
+                                          .format(_startDate!)
                                       : 'Not set',
                                   style: TextStyle(
                                     color: _startDate != null
@@ -218,7 +207,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               )
                             else
                               Icon(Icons.chevron_right_rounded,
-                                  color: AppColors.card.withValues(alpha: 0.4), size: 20),
+                                  color: AppColors.card.withValues(alpha: 0.4),
+                                  size: 20),
                           ],
                         ),
                       ),
@@ -226,9 +216,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -259,7 +247,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   key: ValueKey('saved'),
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.check_rounded, color: Colors.white, size: 20),
+                                    Icon(Icons.check_rounded,
+                                        color: Colors.white, size: 20),
                                     SizedBox(width: 8),
                                     Text('Saved!',
                                         style: TextStyle(
