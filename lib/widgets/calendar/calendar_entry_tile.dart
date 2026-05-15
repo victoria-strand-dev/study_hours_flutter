@@ -3,7 +3,6 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_text.dart';
 import '../../state/app_state.dart';
 import '../../models/models.dart';
-import '../../services/calendar_service.dart';
 import '../shared_widgets.dart';
 import '../buttons/time_picker_btn.dart';
 
@@ -301,15 +300,6 @@ class CalendarEntryTile extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => _exportToCalendar(context),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Icon(Icons.calendar_today_rounded,
-                              color: Colors.white.withValues(alpha: 0.65),
-                              size: 18),
-                        ),
-                      ),
-                      GestureDetector(
                         onTap: () => state.deleteScheduleEntry(entry.id),
                         child: Icon(Icons.close_rounded,
                             color: Colors.white.withValues(alpha: 0.65),
@@ -326,15 +316,4 @@ class CalendarEntryTile extends StatelessWidget {
     );
   }
 
-  Future<void> _exportToCalendar(BuildContext context) async {
-    final result = await CalendarService.instance.addEvent(entry);
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(result.success
-          ? 'Added to calendar'
-          : result.errorMessage ?? 'Unknown error'),
-      backgroundColor: result.success ? AppColors.success : Colors.redAccent,
-      duration: const Duration(seconds: 4),
-    ));
-  }
 }

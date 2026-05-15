@@ -63,36 +63,19 @@ class NextSessionHeroCard extends StatelessWidget {
     if (allDone) {
       return AppCard(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(Icons.celebration_rounded,
-                  color: AppColors.success, size: 26),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('All done!',
-                      style: GoogleFonts.nunito(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: Ts.s(context, 17))),
-                  Text('Every session completed',
-                      style: GoogleFonts.nunito(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          fontWeight: FontWeight.w600,
-                          fontSize: Ts.s(context, 13))),
-                ],
-              ),
-            ),
+            Text('All done!',
+                style: GoogleFonts.nunito(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: Ts.s(context, 17))),
+            Text('Every session completed',
+                style: GoogleFonts.nunito(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    fontWeight: FontWeight.w600,
+                    fontSize: Ts.s(context, 13))),
           ],
         ),
       );

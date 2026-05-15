@@ -189,9 +189,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           .format(_startDate!)
                                       : 'Not set',
                                   style: TextStyle(
-                                    color: _startDate != null
-                                        ? AppColors.card
-                                        : AppColors.card,
+                                    color: AppColors.card,
                                     fontSize: Ts.s(context, 15),
                                     fontWeight: FontWeight.w700,
                                   ),

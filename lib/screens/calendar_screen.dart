@@ -159,39 +159,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 const SizedBox(height: 8),
                             itemBuilder: (context, i) {
                               final entry = entries[i];
-                              return Dismissible(
-                                key: ValueKey(entry.id),
-                                background: Container(
-                                  alignment: Alignment.centerLeft,
-                                  padding: const EdgeInsets.only(left: 20),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.success,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(Icons.check_rounded,
-                                      color: Colors.white, size: 24),
-                                ),
-                                secondaryBackground: Container(
-                                  alignment: Alignment.centerRight,
-                                  padding: const EdgeInsets.only(right: 20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(Icons.delete_rounded,
-                                      color: Colors.white, size: 24),
-                                ),
-                                confirmDismiss: (dir) async {
-                                  if (dir == DismissDirection.startToEnd) {
-                                    state.toggleEntryComplete(entry.id);
-                                    return false;
-                                  }
-                                  return true;
-                                },
-                                onDismissed: (_) =>
-                                    state.deleteScheduleEntry(entry.id),
-                                child: CalendarEntryTile(entry: entry),
-                              );
+                              return CalendarEntryTile(entry: entry);
                             },
                           ),
                   ),
@@ -204,6 +172,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
+//<3<3<3<3<3<3<3<3<3<3 Add new session if day is empty <3<3<3<3<3<3<3<3<3<3<3
   Future<void> _showAddEntryDialog(BuildContext context, AppState state) async {
     if (state.courses.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

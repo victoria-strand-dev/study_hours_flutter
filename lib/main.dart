@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import 'firebase_options.dart';
 import 'models/models.dart';
 import 'screens/start_screen.dart';
@@ -25,7 +26,6 @@ void main() async {
   final localData = StorageService.instance.loadAppData();
   final localEmail = StorageService.instance.userEmail;
 
-  // Check if Firebase still has an active session
   final firebaseUser = FirebaseAuth.instance.currentUser;
   String? uid = firebaseUser?.uid;
   String? email = firebaseUser?.email ?? localEmail;
@@ -36,13 +36,11 @@ void main() async {
       final cloudData = await StorageService.instance.loadFromFirestore(uid);
       if (cloudData != null) data = cloudData;
     } catch (_) {
-      // Cloud load failed — fall back to local cache
     }
   }
 
   final state = AppState(data, email, firebaseUid: uid);
 
-  // Reschedule all notifications in case the OS cleared them (reboot, reinstall, etc.)
   NotificationService.instance.rescheduleAll(data.schedule);
 
   runApp(StudyHoursApp(state: state));

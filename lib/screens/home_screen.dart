@@ -85,10 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final today = DateTime.now();
 
     //<3<3<33<3<3<3<3<3<3 Greeting & date <3<3<3<3<3<3<3<3<3>
-    final email = state.userEmail ?? '';
-    final rawName = email.contains('@') ? email.split('@').first : 'Student';
-    final name = rawName.length > 14 ? rawName.substring(0, 14) : rawName;
-
     final selectedEntries = state.entriesForDay(_selectedDay);
     final nextEntry = _nextEntry(state);
     final allDone = selectedEntries.isNotEmpty && nextEntry == null;
@@ -114,20 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hi, $name 👋',
+                        DateFormat('EEEE, d MMMM').format(today),
                         style: GoogleFonts.nunito(
-                          fontSize: Ts.s(context, 24),
+                          fontSize: Ts.s(context, 22),
                           fontWeight: FontWeight.w900,
                           color: AppColors.textDark,
                           height: 1.1,
-                        ),
-                      ),
-                      Text(
-                        DateFormat('EEEE, d MMMM').format(today),
-                        style: GoogleFonts.nunito(
-                          fontSize: Ts.s(context, 14),
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textDark.withValues(alpha: 0.65),
                         ),
                       ),
                     ],
