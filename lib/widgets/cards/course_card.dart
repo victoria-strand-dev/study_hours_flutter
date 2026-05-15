@@ -59,9 +59,6 @@ class CourseCard extends StatelessWidget {
           '$daysLabel/week → Expected ${course.targetGrade}';
     }
 
-    //<3<3<3<3<3<3<3<3 Grade updtae check <3<3<3<3<3<3<3<3
-    final upgradeGrade = state.achievableUpgradeGrade(course);
-
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -143,40 +140,6 @@ class CourseCard extends StatelessWidget {
                                     : Ts.s(context, 14),
                                 fontWeight:
                                     done ? FontWeight.w800 : FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                          if (upgradeGrade != null) ...[
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.3),
-                                    width: 1),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.trending_up_rounded,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.85),
-                                      size: 14),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      'At this pace you\'re on track for a $upgradeGrade',
-                                      style: TextStyle(
-                                        color: Colors.white
-                                            .withValues(alpha: 0.85),
-                                        fontSize: Ts.s(context, 13),
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ),
                             ),
                           ],

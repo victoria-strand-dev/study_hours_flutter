@@ -240,39 +240,6 @@ class AppState extends ChangeNotifier {
     return rem / weeksLeft;
   }
 
-  String? nextGrade(Course course) {
-    const order = ['F', 'E', 'D', 'C', 'B', 'A'];
-    final idx = order.indexOf(course.targetGrade.toUpperCase());
-    if (idx < 0 || idx >= order.length - 1) return null;
-    return order[idx + 1];
-  }
-
-  String? achievableUpgradeGrade(Course course) {
-    final weeksLeft = weeksRemainingForCourse(course);
-    if (weeksLeft == null || weeksLeft <= 0) return null;
-    final next = nextGrade(course);
-    if (next == null) return null;
-
-    final allDone = _data.schedule
-        .where((e) => e.courseId == course.id && e.completed)
-        .toList();
-    if (allDone.isEmpty) return null;
-
-    final firstDate =
-        allDone.map((e) => e.date).reduce((a, b) => a.isBefore(b) ? a : b);
-    final today = DateTime.now();
-    final weeksElapsed = today.difference(firstDate).inDays / 7.0;
-    if (weeksElapsed < 0.5) return null; // not enough data
-
-    final completedH = effectiveCompletedHours(course);
-    final weeklyPace = completedH / weeksElapsed;
-    if (weeklyPace <= 0) return null;
-
-    final projected = completedH + weeklyPace * weeksLeft;
-    final nextTarget = targetHoursForGrade(course, next);
-    return projected >= nextTarget ? next : null;
-  }
-
   int get studyStreak {
     final today = DateTime.now();
     final todayOnly = DateTime(today.year, today.month, today.day);

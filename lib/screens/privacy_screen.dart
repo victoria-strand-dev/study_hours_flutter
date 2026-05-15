@@ -93,7 +93,7 @@ class PrivacyScreen extends StatelessWidget {
               items: [
                 'We use industry-standard security measures including encrypted authentication (Firebase Auth) and server-side access control (Firestore security rules).',
                 'Passwords are never stored in plain text — Firebase Authentication uses secure hashing.',
-                'Only authenticated users can access their own data. No one else — including the developer — can read your data.',
+                'No other user can access your data. Access is restricted to the authenticated account holder.',
               ],
             ),
 

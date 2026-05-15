@@ -56,7 +56,7 @@ class TermsScreen extends StatelessWidget {
               title: 'Changes to these terms',
               body: 'We may update these terms from time to time. '
                   'Continued use of the app after changes constitutes acceptance of the updated terms. '
-                  'We will notify you of significant changes.',
+                  'Changes will be reflected in the updated policy available in the app.',
             ),
             _TermsSection(
               title: 'Governing law',
