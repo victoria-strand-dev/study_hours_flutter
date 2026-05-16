@@ -12,8 +12,8 @@ class AppColors {
   static const Color cardDark = Color(0xFF2E82C8); 
   static const Color cardDeep = Color(0xFF3D6899); 
 
-  static const Color surface = Color(0xFFFFFFFF); // White — "selected" pop
-  static const Color surfaceAlt = Color(0xFFEFF7FD); // Very light blue-white
+  static const Color surface = Color(0xFFFFFFFF); 
+  static const Color surfaceAlt = Color(0xFFEFF7FD); 
 
   //<3<3<3<3<3<3<3<3<3<3<3<3 Text colors <3<3<3<3<3<3<3<3<3<3<3<3
   static const Color textDark =

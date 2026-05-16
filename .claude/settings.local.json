@@ -4,7 +4,8 @@
       "Bash(flutter analyze:*)",
       "Bash(flutter build:*)",
       "Bash(flutterfire --version)",
-      "Bash(flutter pub:*)"
+      "Bash(flutter pub:*)",
+      "Bash(dart analyze *)"
     ]
   }
 }

@@ -27,12 +27,9 @@ class AppState extends ChangeNotifier {
   int? get weeksRemaining => _data.weeksRemaining;
   double get totalCourseCredits => _data.totalCourseCredits;
 
-  //<3<3<3<3<3<3<3<3<3<3<3<3<3<3 Persist <3<3<3<3<3<3<3<3<3<3<3<3<3<3
-
   Future<void> _save() async {
     await StorageService.instance.saveAppData(_data);
     if (_firebaseUid != null) {
-      // Fire-and-forget — failure is non-critical (local cache stays intact)
       StorageService.instance.saveToFirestore(_firebaseUid!, _data);
     }
   }
